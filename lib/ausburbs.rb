@@ -6,6 +6,7 @@ module Ausburbs
 
   class << self
     def state_names
+      load_data
       @@states.keys.sort
     end
 
