@@ -5,20 +5,42 @@ describe Ausburbs do
 
   end
 
-  it "should return a list of states" do
-    Ausburbs.states.should be_a(Hash)
-    Ausburbs.states.has_key?(:act).should be_true
-    Ausburbs.states.has_key?(:nsw).should be_true
-    Ausburbs.states.has_key?(:nt).should be_true
-    Ausburbs.states.has_key?(:qld).should be_true
-    Ausburbs.states.has_key?(:sa).should be_true
-    Ausburbs.states.has_key?(:tas).should be_true
-    Ausburbs.states.has_key?(:vic).should be_true
-    Ausburbs.states.has_key?(:wa).should be_true
+  it "should return a list of states, in alphabetical order" do
+    Ausburbs.states.should be_a(Array)
+    last_state = nil
+    Ausburbs.states.each do |state|
+      state.should be_a(Ausburbs::State)
+      (state.name > last_state.name).should be_true if last_state
+      last_state = state
+    end
   end
 
-  it "should return an list of suburbs for a given state" do
-    Ausburbs.suburbs("NSW").should be_an(Array)
+  it "should return an list of suburbs for a given state, in postcode order" do
+    Ausburbs.states.each do |state|
+      state.suburbs.should be_a(Array)
+      last_suburb = nil
+      state.suburbs.each do |suburb|
+        suburb.should be_a(Ausburbs::Suburb)
+        (suburb.postcode >= last_suburb.postcode).should be_true if last_suburb
+        last_suburb = suburb
+      end
+    end
+  end
+
+  it "should return the list of state names, in alphabetical order" do
+    Ausburbs.state_names.should be_a(Array)
+    last_state_name = nil
+    Ausburbs.state_names.each do |state_name|
+      (state_name.should >= last_state_name).should be_true if last_state_name
+      last_state_name = state_name
+    end
+  end
+
+  it "should return a state for a given state name" do
+    Ausburbs.state_names.each do |state_name|
+      Ausburbs.state(state_name).should be_a(Ausburbs::State)
+      Ausburbs.state(state_name).name.should == state_name
+    end
   end
 end
 
@@ -30,13 +52,6 @@ describe Ausburbs::State do
   it "should have a name" do
     @state.respond_to?(:name).should be_true
     @state.name.should be_a(String)
-  end
-
-  it "should have an abbreviation" do
-    @state.respond_to?(:abbreviation).should be_true
-    @state.abbreviation.should be_a(String)
-    @state.respond_to?(:abbr).should be_true
-    @state.abbr.should be_a(String)
   end
 
   it "should return a list of suburbs" do
@@ -55,8 +70,8 @@ describe Ausburbs::Suburb do
   end
 
   it "should have a postcode" do
-    @suburb.respond_to?(:suburb).should be_true
-    @suburb.suburb.should be_a(String)
+    @suburb.respond_to?(:postcode).should be_true
+    @suburb.postcode.should be_a(String)
   end
 
   it "should have a latitude"do
