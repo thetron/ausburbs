@@ -7,11 +7,11 @@ module Ausburbs
 
     private
     def parse!(data)
-      self.name = data[:name]
-      self.postcode = data[:postcode].rjust(4, '0')
-      self.state = data[:state]
-      self.latitude = data[:latitude]
-      self.longitude = data[:longitude]
+      self.name = data[:name].to_s
+      self.postcode = data[:postcode].to_s.rjust(4, '0')
+      self.state = data[:state].to_s
+      self.latitude = data[:latitude].to_f
+      self.longitude = data[:longitude].to_f
     end
   end
 end
